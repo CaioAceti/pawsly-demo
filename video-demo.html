@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Pawsly — vídeo de demonstração</title>
+  <style>
+    :root{--ink:#1e293b;--bg:#f5f8fb;--brand:#23845e;--line:#dbe4ee}*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Inter,Arial,sans-serif;color:var(--ink)}main{max-width:920px;margin:42px auto;padding:0 22px}h1{margin:0;font-size:32px}p{line-height:1.55;color:#526274}.note{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin:20px 0}canvas{width:100%;height:auto;border:1px solid var(--line);border-radius:16px;background:#fff;box-shadow:0 18px 45px #1e293b18}button,a{display:inline-block;border:0;border-radius:10px;padding:13px 17px;background:var(--brand);color:#fff;font-weight:700;text-decoration:none;cursor:pointer;font:inherit;margin:15px 8px 0 0}button:disabled{background:#94a3b8;cursor:wait}.muted{font-size:13px;color:#64748b}code{background:#e7eef0;border-radius:4px;padding:2px 5px}
+  </style>
+</head>
+<body><main>
+  <h1>Pawsly — vídeo de demonstração</h1>
+  <p>Apresentação visual dos fluxos da primeira iteração. O vídeo contém legendas e dura aproximadamente 2 minutos.</p>
+  <canvas id="stage" width="1280" height="720" aria-label="Prévia da demonstração"></canvas>
+  <div><button id="start">Gerar vídeo WebM</button><a href="index.html">Abrir demonstração funcional</a></div>
+  <p id="status" class="muted">A prévia alterna automaticamente entre os fluxos. Ao gerar, mantenha esta guia aberta até o download começar.</p>
+  <div class="note"><b>Conteúdo do vídeo:</b> visão geral, carteira de saúde, registro de evento, rotina, lembretes e assistente informativo. A demonstração usa dados fictícios do pet Thor.</div>
+</main>
+<script>
+const c=document.getElementById('stage'),x=c.getContext('2d'),start=document.getElementById('start'),status=document.getElementById('status');
+const frames=[
+ ['Visão geral','A tela inicial reúne a situação de saúde, lembretes e cuidados próximos.', 'Olá, Caio', ['Vacina próxima: reforço da V10 em 15 de outubro','Eventos de saúde  3','Lembretes ativos  2','Rotina de hoje  2 / 3']],
+ ['Carteira de saúde','O histórico organiza vacinas, consultas e medicações do animal.', 'Carteira de saúde', ['VACINA   V10 — reforço anual','CONSULTA   Consulta de rotina','MEDICAÇÃO   Antipulgas mensal']],
+ ['Registro de evento','O usuário inclui categoria, data e descrição para atualizar a carteira.', 'Registrar evento de saúde', ['Categoria: Vacina','Data: 30/09/2026','Descrição: Vacina antirrábica','Salvar']],
+ ['Rotina do dia','Os cuidados cotidianos podem ser acompanhados e concluídos na própria tela.', 'Rotina do dia', ['Alimentação da manhã     Concluído','Passeio da tarde          Concluir','Escovação                 Concluir']],
+ ['Lembretes','A pessoa responsável visualiza os avisos programados para o dispositivo.', 'Lembretes', ['Reforço V10   15/10/2026 às 09:00','Antipulgas mensal   01/11/2026 às 09:00']],
+ ['Assistente Pawsly','O assistente responde dúvidas gerais e reforça a necessidade de avaliação veterinária em casos de risco.', 'Assistente Pawsly', ['Uso responsável: não fornece diagnóstico ou prescrição.','Pergunta: Quais sinais devo observar depois da vacina?','Resposta: procure atendimento veterinário se houver sinais de risco.']]
+];
+function box(l,t,w,h,fill='#fff',stroke='#dbe4ee'){x.fillStyle=fill;x.fillRect(l,t,w,h);x.strokeStyle=stroke;x.lineWidth=2;x.strokeRect(l,t,w,h)}
+function text(v,l,t,size=24,color='#1e293b',bold=false){x.fillStyle=color;x.font=`${bold?'700':'400'} ${size}px Arial`;x.fillText(v,l,t)}
+function draw(i,progress=1){const [label,caption,title,items]=frames[i];x.fillStyle='#f5f8fb';x.fillRect(0,0,1280,720);x.fillStyle='#123b31';x.fillRect(0,0,255,720);text('pawsly',38,68,34,'#fff',true);text('Thor',42,137,22,'#fff',true);text('Golden Retriever · 4 anos',42,165,14,'#b7d9ca');['Visão geral','Meus pets','Carteira de saúde','Rotina do dia','Lembretes','Assistente'].forEach((v,n)=>{if((i===0&&n===0)||(i===1||i===2)&&n===2||(i===3&&n===3)||(i===4&&n===4)||(i===5&&n===5)){x.fillStyle='#2a6552';x.fillRect(18,190+n*55,220,42)}text(v,45,218+n*55,17,'#e6fff3')});text(label,300,70,16,'#23845e',true);text(title,300,125,34,'#1e293b',true);text(caption,300,160,18,'#64748b');let y=215;items.forEach((v,n)=>{const a=Math.max(0,Math.min(1,(progress*items.length-n)*2));x.globalAlpha=a;box(300,y,900,76,n===0&&i===0?'#fff6f3':'#fff');text(v,328,y+32,19,'#1e293b',n===0);if(i===0&&n>0)text(v.split('  ')[1]||'',1030,y+52,25,'#23845e',true);y+=92});x.globalAlpha=1;x.fillStyle='#1e293b';x.globalAlpha=.7;x.fillRect(0,650,1280,70);x.globalAlpha=1;text(`Demonstração Pawsly · ${i+1} de ${frames.length}`,38,693,18,'#fff');x.fillStyle='#23845e';x.fillRect(0,714,1280*((i+progress)/frames.length),6)}
+let startedAt=performance.now();const perFrame=20000;function preview(now){const total=frames.length*perFrame;let elapsed=(now-startedAt)%total;let i=Math.floor(elapsed/perFrame);draw(i,(elapsed%perFrame)/perFrame);requestAnimationFrame(preview)}requestAnimationFrame(preview);
+start.onclick=async()=>{start.disabled=true;status.textContent='Gravando a demonstração. O arquivo será preparado ao final.';const stream=c.captureStream(12);const chunks=[];const rec=new MediaRecorder(stream,{mimeType:'video/webm;codecs=vp9'});rec.ondataavailable=e=>e.data.size&&chunks.push(e.data);rec.onstop=()=>{window.videoBlob=new Blob(chunks,{type:'video/webm'});status.textContent='Vídeo gerado. O arquivo está pronto para download.';start.disabled=false};rec.start();const total=frames.length*perFrame;const begin=performance.now();function record(now){const elapsed=now-begin;const i=Math.min(frames.length-1,Math.floor(elapsed/perFrame));draw(i,Math.min(1,(elapsed%perFrame)/perFrame));if(elapsed<total)requestAnimationFrame(record);else rec.stop()}requestAnimationFrame(record)};
+</script></body></html>
