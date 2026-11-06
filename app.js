@@ -57,9 +57,10 @@
       document.querySelectorAll('.filters button').forEach(item => item.classList.remove('selected'));
       button.classList.add('selected');
       const category = button.textContent.trim().toUpperCase();
+      const categoryMap = { VACINAS: 'VACINA', CONSULTAS: 'CONSULTA', 'MEDICAÇÕES': 'MEDICAÇÃO' };
       document.querySelectorAll('#events .event').forEach(item => {
         const itemCategory = item.querySelector('.kind').textContent.trim();
-        item.style.display = category === 'TODOS' || itemCategory === category.slice(0, -1) || itemCategory === category ? 'flex' : 'none';
+        item.style.display = category === 'TODOS' || itemCategory === categoryMap[category] ? 'flex' : 'none';
       });
     };
   });
